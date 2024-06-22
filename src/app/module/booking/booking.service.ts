@@ -113,7 +113,7 @@ const returnBikeIntoDB = async (id: string) => {
 };
 
 const getAllRentalsFromDB = async (userId: string) => {
-    const rentals = await Booking.findById(userId);
+    const rentals = await Booking.find({ userId });
     return rentals;
 };
 
