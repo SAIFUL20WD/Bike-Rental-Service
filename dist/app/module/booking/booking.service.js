@@ -21,7 +21,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const createBikeRentalIntoDB = (userId, payLoad) => __awaiter(void 0, void 0, void 0, function* () {
     const bike = yield bike_model_1.default.findById(payLoad.bikeId);
     if (!bike) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No Bike found with given id");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No Bike found");
     }
     else if (!bike.isAvailable) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Bike is currently unavailable");
@@ -49,17 +49,22 @@ const createBikeRentalIntoDB = (userId, payLoad) => __awaiter(void 0, void 0, vo
     catch (err) {
         yield session.abortTransaction();
         yield session.endSession();
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Failed to delete student");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Failed to create rental");
     }
 });
 const returnBikeIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const booking = yield booking_model_1.default.findById(id);
     if (!booking) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No Booking found with given id");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No Booking found");
     }
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
+        const bike = yield bike_model_1.default.findById(booking.bikeId);
+        if (!bike) {
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Bike not found");
+        }
+        const costPerMinute = Math.round((bike === null || bike === void 0 ? void 0 : bike.pricePerHour) / 60);
         // Calculate Cost Per Minute From Rent Time
         const returnTime = new Date();
         const returnTimeFormat = returnTime.toISOString().slice(0, 19) + "Z";
@@ -67,7 +72,7 @@ const returnBikeIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
         const differenceMs = returnTime.getTime() - startTime.getTime();
         const minutes = differenceMs / (1000 * 60);
         const rentTime = Math.floor(minutes);
-        const totalCost = Math.round(rentTime * 0.25);
+        const totalCost = Math.round(rentTime * costPerMinute);
         const updatedBookingData = {
             returnTime: returnTimeFormat,
             totalCost: totalCost,
@@ -95,7 +100,7 @@ const returnBikeIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 const getAllRentalsFromDB = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const rentals = yield booking_model_1.default.find({ userId });
+    const rentals = yield booking_model_1.default.findById(userId);
     return rentals;
 });
 exports.BookingServices = {

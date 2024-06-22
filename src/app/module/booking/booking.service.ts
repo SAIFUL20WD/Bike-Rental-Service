@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 const createBikeRentalIntoDB = async (userId: string, payLoad: Partial<TBooking>) => {
     const bike = await Bike.findById(payLoad.bikeId);
     if (!bike) {
-        throw new AppError(httpStatus.NOT_FOUND, "No Bike found with given id");
+        throw new AppError(httpStatus.NOT_FOUND, "No Bike found");
     } else if (!bike.isAvailable) {
         throw new AppError(httpStatus.NOT_FOUND, "Bike is currently unavailable");
     }
@@ -45,20 +45,27 @@ const createBikeRentalIntoDB = async (userId: string, payLoad: Partial<TBooking>
     } catch (err) {
         await session.abortTransaction();
         await session.endSession();
-        throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
+        throw new AppError(httpStatus.BAD_REQUEST, "Failed to create rental");
     }
 };
 
 const returnBikeIntoDB = async (id: string) => {
     const booking = await Booking.findById(id);
     if (!booking) {
-        throw new AppError(httpStatus.NOT_FOUND, "No Booking found with given id");
+        throw new AppError(httpStatus.NOT_FOUND, "No Booking found");
     }
 
     const session = await mongoose.startSession();
 
     try {
         session.startTransaction();
+
+        const bike = await Bike.findById(booking.bikeId);
+        if (!bike) {
+            throw new AppError(httpStatus.BAD_REQUEST, "Bike not found");
+        }
+
+        const costPerMinute = Math.round((bike?.pricePerHour as number) / 60);
 
         // Calculate Cost Per Minute From Rent Time
         const returnTime = new Date();
@@ -69,7 +76,7 @@ const returnBikeIntoDB = async (id: string) => {
         const minutes = differenceMs / (1000 * 60);
 
         const rentTime = Math.floor(minutes);
-        const totalCost = Math.round(rentTime * 0.25);
+        const totalCost = Math.round(rentTime * costPerMinute);
 
         const updatedBookingData = {
             returnTime: returnTimeFormat,
@@ -106,7 +113,7 @@ const returnBikeIntoDB = async (id: string) => {
 };
 
 const getAllRentalsFromDB = async (userId: string) => {
-    const rentals = await Booking.find({ userId });
+    const rentals = await Booking.findById(userId);
     return rentals;
 };
 
