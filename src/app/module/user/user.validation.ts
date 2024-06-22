@@ -27,6 +27,11 @@ const updateUserValidationSchema = z.object({
         .min(3, { message: "Name must must be minimum 3 characters" })
         .max(20, { message: "Name can not be more than 20 characters" })
         .optional(),
+    password: z
+        .string()
+        .min(8, { message: "Password must be minimum 8 characters" })
+        .max(20, { message: "Password can not be more than 20 characters" })
+        .optional(),
     phone: z
         .string()
         .trim()
@@ -34,6 +39,7 @@ const updateUserValidationSchema = z.object({
         .max(15, { message: "Phone number not be more than 15 characters" })
         .optional(),
     address: z.string().optional(),
+    role: z.enum(["admin", "user"]).optional(),
 });
 
 export const userValidations = {

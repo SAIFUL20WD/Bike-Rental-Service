@@ -23,7 +23,8 @@ const updateBikeIntoDB = async (id: string, payLoad: Partial<TBike>) => {
 };
 
 const deleteBikeFromDB = async (id: string) => {
-    const bike = await Bike.findByIdAndUpdate(id, { isAvailable: false }, { new: true });
+    // const bike = await Bike.findByIdAndUpdate(id, { isAvailable: false }, { new: true });
+    const bike = await Bike.findByIdAndDelete(id);
 
     if (!bike) {
         throw new AppError(httpStatus.NOT_FOUND, "Bike not found");

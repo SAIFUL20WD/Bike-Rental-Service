@@ -32,7 +32,8 @@ const updateBikeIntoDB = (id, payLoad) => __awaiter(void 0, void 0, void 0, func
     return bike;
 });
 const deleteBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const bike = yield bike_model_1.default.findByIdAndUpdate(id, { isAvailable: false }, { new: true });
+    // const bike = await Bike.findByIdAndUpdate(id, { isAvailable: false }, { new: true });
+    const bike = yield bike_model_1.default.findByIdAndDelete(id);
     if (!bike) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Bike not found");
     }
