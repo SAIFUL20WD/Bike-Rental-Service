@@ -15,7 +15,7 @@ app.use((0, cors_1.default)());
 app.use((0, cookie_parser_1.default)());
 app.use("/api", routes_1.default);
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    res.send("Welcome To Bike Rental!");
 });
 app.use(globalErrorHandler_1.default);
 app.use(notFound_1.default);

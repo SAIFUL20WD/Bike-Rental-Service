@@ -64,7 +64,7 @@ const returnBikeIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
         if (!bike) {
             throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Bike not found");
         }
-        const costPerMinute = Math.round((bike === null || bike === void 0 ? void 0 : bike.pricePerHour) / 60);
+        const costPerMinute = (bike === null || bike === void 0 ? void 0 : bike.pricePerHour) / 60;
         // Calculate Cost Per Minute From Rent Time
         const returnTime = new Date();
         const returnTimeFormat = returnTime.toISOString().slice(0, 19) + "Z";

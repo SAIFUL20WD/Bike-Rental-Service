@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use("/api", router);
 
 app.get("/", (req: Request, res: Response) => {
-    res.send("Hello World!");
+    res.send("Welcome To Bike Rental!");
 });
 
 app.use(globalErrorHandler);
